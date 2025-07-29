@@ -37,8 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-     'Artifi',
-       'corsheaders',
+    'rest_framework',
+    'corsheaders',
+    'Artifi',
 ]
 
 MIDDLEWARE = [
@@ -49,13 +50,22 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-        'corsheaders.middleware.CorsMiddleware',]
+    'corsheaders.middleware.CorsMiddleware', ]
+
 
 ROOT_URLCONF = 'ArtifiAiBackend.urls'
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True  # or use CORS_ALLOWED_ORIGINS with ["http://localhost:3000"]
+
+# Needed to allow sending cookies or credentials (if any)
+CORS_ALLOW_CREDENTIALS = True
+
+# Allow image content types
+CORS_EXPOSE_HEADERS = ['Content-Type']
 
 
 TEMPLATES = [
@@ -116,6 +126,11 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+import os
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Static files (CSS, JavaScript, Images)
