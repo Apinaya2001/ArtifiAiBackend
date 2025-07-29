@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual Environment
+env/
+venv/
+
+# Django-specific
+db.sqlite3
+*.log
+
+# VS Code settings
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Media uploads (optional)
+media/
+
+# Model checkpoints and outputs
+checkpoints/
+*.pth
+output/
+
+# PyTorch or Jupyter temp files
+.ipynb_checkpoints/
+
+# Env variables
+.env
