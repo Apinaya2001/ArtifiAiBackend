@@ -1,7 +1,6 @@
-# styletransfer/urls.py
 from django.urls import path
-from .views import style_transfer
+from .views import StyleTransferView  # ✅ Correct
 
 urlpatterns = [
-    path('style/transfer/', style_transfer),
+    path('style/transfer/', StyleTransferView.as_view(), name='style_transfer'),  # ✅ FIXED
 ]
