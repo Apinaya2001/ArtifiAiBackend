@@ -33,3 +33,4 @@ output/
 
 # Env variables
 .env
+node_modules/
