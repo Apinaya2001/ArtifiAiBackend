@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -40,6 +41,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'Artifi',
+    #  "graphene_django",
+    #  'graphene_file_upload',
+    #  "graphql_jwt",
 ]
 
 MIDDLEWARE = [
@@ -97,6 +101,22 @@ DATABASES = {
 }
 
 
+
+# GRAPHENE = {
+#     'SCHEMA': 'ArtifiAiBackend.schema.schema',
+#     'MIDDLEWARE': [
+#         'graphql_jwt.middleware.JSONWebTokenMiddleware',
+#         # 'graphene_file_upload.middleware.FileUploadMiddleware',
+#     ]
+# }
+
+
+AUTHENTICATION_BACKENDS = [
+    'graphql_jwt.backends.JSONWebTokenBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
@@ -127,11 +147,11 @@ USE_I18N = True
 
 USE_TZ = True
 
-import os
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# Make sure DEBUG = True during local dev
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
