@@ -41,6 +41,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'Artifi',
+    'accounts',
+    'profiles',
+    'posts',
+    'chat',
+    'styletransfer',
+     # third-party apps
+    'rest_framework_simplejwt',
     #  "graphene_django",
     #  'graphene_file_upload',
     #  "graphql_jwt",
@@ -54,8 +61,17 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware', ]
+    'corsheaders.middleware.CorsMiddleware', 
+    ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
 
 ROOT_URLCONF = 'ArtifiAiBackend.urls'
 
@@ -93,14 +109,21 @@ WSGI_APPLICATION = 'ArtifiAiBackend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+# Postgres
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'artifiai', 'USER': 'postgres', 'PASSWORD': 'root',
+        'HOST': '127.0.0.1', 'PORT': '5432',
     }
 }
-
-
 
 # GRAPHENE = {
 #     'SCHEMA': 'ArtifiAiBackend.schema.schema',
@@ -147,9 +170,13 @@ USE_I18N = True
 
 USE_TZ = True
 
+CORS_ALLOW_ALL_ORIGINS = True  # tighten later
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Make sure DEBUG = True during local dev
 
