@@ -175,6 +175,11 @@ CORS_ALLOW_ALL_ORIGINS = True  # tighten later
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+SIMPLE_JWT = {
+    # ...
+    "UPDATE_LAST_LOGIN": True,
+}
+
 # MEDIA_URL = '/media/'
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
