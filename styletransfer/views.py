@@ -78,10 +78,14 @@ from .inference import run_inference_with_postprocessing
 STYLE_MAP = {
     "anime": "anime",
     "cyberpunk": "cyberverse",
+     "cyberverse": "cyberverse",
     "artbyai": "artbyai",
+     "artibi": "artbyai",
     "vangogh": "vangogh",
     "oilpainting": "oilpainting",
 }
+
+FREE_STYLES = {"anime", "artbyai"}  # free on marketing
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
