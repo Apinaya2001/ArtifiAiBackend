@@ -9,6 +9,11 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
+from datetime import timedelta
+SIMPLE_JWT = {
+    # …your lifetimes, etc.
+    "UPDATE_LAST_LOGIN": True,   # <— add this
+}
 
 import os
 from pathlib import Path

@@ -116,21 +116,15 @@ from django.utils import timezone
 
 
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, permissions
+from rest_framework.decorators import api_view, permission_classes
 
-from rest_framework_simplejwt.tokens import RefreshToken
-
-
-def _tokens_for_user(user: User):
-    refresh = RefreshToken.for_user(user)
-    return str(refresh.access_token), str(refresh)
+from .serializers import RegisterSerializer, UserMeSerializer, ChangePasswordSerializer
 
 
 class RegisterView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request):
         username    = (request.data.get("username") or "").strip()
@@ -173,13 +167,14 @@ class RegisterView(APIView):
         )
 
 
-@api_view(["POST"])
-@permission_classes([AllowAny])  # public
-def login_view(request):
-    ident = request.data.get("username") or request.data.get("email")
-    password = request.data.get("password")
-    if not ident or not password:
-        return Response({"detail": "username/email and password required"}, status=400)
+@api_view(["GET", "PATCH"])
+@permission_classes([permissions.IsAuthenticated])
+def me_user(request):
+    if request.method == "PATCH":
+        s = UserMeSerializer(request.user, data=request.data, partial=True)
+        s.is_valid(raise_exception=True)
+        s.save()
+        return Response(s.data, status=status.HTTP_200_OK)
 
     # Allow email login by mapping to username if an email was provided
     username = ident
@@ -216,8 +211,8 @@ def login_view(request):
     )
 
 
-class MeView(APIView):
-    permission_classes = [IsAuthenticated]
+class ChangePasswordView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         u = request.user
