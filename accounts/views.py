@@ -1,43 +1,65 @@
-# accounts/views.py
-from rest_framework.views import APIView
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import update_last_login
+from rest_framework import status
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import status, permissions
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken, BlacklistedToken, OutstandingToken
 
-from .serializers import RegisterSerializer, UserMeSerializer, ChangePasswordSerializer
+from .serializers import RegisterSerializer, UserSerializer
 
+def _token_payload_for(user):
+    refresh = RefreshToken.for_user(user)
+    return {
+        "access": str(refresh.access_token),
+        "refresh": str(refresh),
+        "user": UserSerializer(user).data,
+    }
 
 class RegisterView(APIView):
-    """
-    POST /api/accounts/register/
-    -> creates a user, returns user info (no tokens)
-    """
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [AllowAny]
 
     def post(self, request):
         s = RegisterSerializer(data=request.data)
         if not s.is_valid():
-            # return field errors so the client can show them
-            return Response(s.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response(s.errors, status=400)
         user = s.save()
-        return Response({"user": UserMeSerializer(user).data},
-                        status=status.HTTP_201_CREATED)
+        update_last_login(None, user)
+        return Response(_token_payload_for(user), status=201)
 
-
-@api_view(["GET", "PATCH"])
-@permission_classes([permissions.IsAuthenticated])
-def me_user(request):
-    if request.method == "PATCH":
-        s = UserMeSerializer(request.user, data=request.data, partial=True)
-        s.is_valid(raise_exception=True)
-        s.save()
-        return Response(s.data, status=status.HTTP_200_OK)
-    return Response(UserMeSerializer(request.user).data, status=status.HTTP_200_OK)
-
-
-class ChangePasswordView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+class LoginView(APIView):
+    permission_classes = [AllowAny]
 
     def post(self, request):
-        s = ChangePasswordSerializer(data=request.data, context={"request": request})
+        username = request.data.get("username")
+        password = request.data.get("password")
+        if not username or not password:
+            return Response({"error": "username and password required"}, status=400)
+
+        user = authenticate(request, username=username, password=password)
+        if not user:
+            return Response({"error": "Invalid credentials"}, status=400)
+
+        update_last_login(None, user)
+        return Response(_token_payload_for(user), status=200)
+
+class MeView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        return Response(UserSerializer(request.user).data)
+
+class LogoutView(APIView):
+    """
+    Blacklists the provided refresh token (requires token_blacklist app).
+    Body: { "refresh": "<refresh_token>" }
+    """
+    def post(self, request):
+        refresh = request.data.get("refresh")
+        if not refresh:
+            return Response({"error": "refresh token required"}, status=400)
+        try:
+            token = RefreshToken(refresh)
+            token.blacklist()
+            return Response({"detail": "Logged out"}, status=200)
+        except Exception:
+            return Response({"error": "invalid refresh token"}, status=400)
