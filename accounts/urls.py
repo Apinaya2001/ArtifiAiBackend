@@ -1,12 +1,17 @@
-# accounts/urls.py
 from django.urls import path
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from .views import RegisterView, me_user, ChangePasswordView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes
+from . import views
+
+me_view        = permission_classes([IsAuthenticated])(views.me)
+logout_view    = permission_classes([IsAuthenticated])(views.logout)
+change_pw_view = permission_classes([IsAuthenticated])(views.change_password)
 
 urlpatterns = [
-    path("login/",   TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    path("refresh/", TokenRefreshView.as_view(),     name="token_refresh"),
-    path("register/", RegisterView.as_view(),        name="register"),
-    path("me/",       me_user,                       name="me_user"),
-    path("password/", ChangePasswordView.as_view(),  name="change_password"),
+    path("register/", views.register),
+    path("login/", views.login),
+    path("refresh/", views.refresh),         # <-- add this
+    path("me/", me_view),
+    path("change-password/", change_pw_view),
+    path("logout/", logout_view),
 ]
