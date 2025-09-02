@@ -1,6 +1,10 @@
 # chat/urls.py
-from rest_framework.routers import DefaultRouter
-from .views import ThreadViewSet
-router = DefaultRouter()
-router.register('', ThreadViewSet, basename='threads')
-urlpatterns = router.urls
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("start/", views.start_conversation),
+    path("conversations/", views.conversation_list),
+    path("conversations/<int:pk>/messages/", views.conversation_messages),
+    path("conversations/<int:pk>/read/", views.mark_read),
+]
